@@ -1,4 +1,5 @@
 ##Сервис комментариев
+***
 
 superuser: admin password: admin
 
