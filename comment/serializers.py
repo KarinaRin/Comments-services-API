@@ -7,7 +7,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['content_type', 'object_id', 'parent', 'datetime_created', 'text', 'user']
+        fields = ['content_type', 'object_id', 'parent', 'created_at', 'text', 'user']
 
 
 class FlatCommentUserSerializer(serpy.Serializer):
@@ -22,7 +22,7 @@ class FlatCommentSerializer(serpy.Serializer):
     content_type_id = serpy.IntField()
     text = serpy.StrField()
     object_id = serpy.IntField()
-    datetime_created = serpy.StrField()
+    created_at = serpy.StrField()
     level = serpy.IntField()
     user = serpy.StrField()
 
