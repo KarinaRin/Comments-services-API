@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'comment',
     'mptt',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

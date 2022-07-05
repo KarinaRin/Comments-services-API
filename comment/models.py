@@ -8,7 +8,7 @@ User = get_user_model()
 
 class Comment(MPTTModel):
     content_type = models.ForeignKey(ContentType, verbose_name='Тип сущности', on_delete=models.CASCADE,
-                                     limit_choices_to={'app_label': 'comment'}, db_index=True)
+                                     limit_choices_to={'app_label': 'comment'})
     object_id = models.PositiveIntegerField(verbose_name='ID объекта сущности', db_index=True)
     parent = TreeForeignKey('self', verbose_name='Родитель комментария', null=True, blank=True, db_index=True,
                             on_delete=models.CASCADE, related_name='children')
