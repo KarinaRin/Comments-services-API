@@ -22,28 +22,7 @@ class CommentsViewSet(mixins.CreateModelMixin,
     renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (CSVRenderer,)
 
     def get_queryset(self):
-        if self.action == 'parent':
-            return Comment.objects.filter(parent=None)
-        if self.action == 'children':
-            return Comment.objects.all()
-        if self.action == 'user':
-            return Comment.objects.all()
-        if self.action == 'export_csv':
-            return Comment.objects.all()
-
         return Comment.objects.all()
-
-    @action(methods=["get"], detail=False)
-    def parent(self, request, *args, **kwargs):
-        return self.list(self, request, *args, **kwargs)
-
-    @action(methods=["get"], detail=False)
-    def children(self, request, *args, **kwargs):
-        return self.list(self, request, *args, **kwargs)
-
-    @action(methods=["get"], detail=False)
-    def user(self, request, *args, **kwargs):
-        return self.list(self, request, *args, **kwargs)
 
     @action(methods=["get"], detail=False)
     def export_csv(self, request):
@@ -52,10 +31,10 @@ class CommentsViewSet(mixins.CreateModelMixin,
         response.write(u'\ufeff'.encode('utf8'))
         writer = csv.writer(response)
         writer.writerow(['User', 'Date of creation', 'Parent', 'Content type', 'Related entity', 'Text'])
-        for comment in queryset.values_list('user',
+        for comment in queryset.values_list('user__username',
                                             'created_at',
                                             'parent',
-                                            'content_type',
+                                            'content_type__model',
                                             'object_id',
                                             'text',
                                             ):
