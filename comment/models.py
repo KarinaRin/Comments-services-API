@@ -14,7 +14,7 @@ class Comment(MPTTModel):
                             on_delete=models.CASCADE, related_name='children')
     user = models.ForeignKey(User, verbose_name='Автор комментария', on_delete=models.CASCADE)
     text = models.TextField(verbose_name='Текст комментария')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время создания')
+    created_at = models.DateField(auto_now_add=True, verbose_name='Дата создания')
 
     class Meta:
         verbose_name = 'Комментарий'
