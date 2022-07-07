@@ -2,7 +2,7 @@
 
 superuser: admin password: admin
 
-users: author1, subscriber
+users: user
 
 ##Доступные эндпоинты:
 
