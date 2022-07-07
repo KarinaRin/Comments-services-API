@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -8,10 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# DEBUG = True
 DEBUG = (os.getenv("DEBUG") == 'True')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"]
 
 
 INSTALLED_APPS = [
@@ -90,8 +90,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
