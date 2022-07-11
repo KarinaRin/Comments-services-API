@@ -15,17 +15,18 @@ services:
       - db
 
   db:
-    image: nouchka/sqlite3
-    container_name: sqllite3
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./:/root/db
+    image: postgres
     environment:
-      - SQLITE3_DB=db.sqlite3
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     ports:
-      - "9000:9000"
+      - '5432:5432'
 
+volumes:
+  postgres-data:
 
 
 
