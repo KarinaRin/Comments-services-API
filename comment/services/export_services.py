@@ -2,8 +2,7 @@ import csv
 from django.http import HttpResponse
 
 
-def export_csv(self):
-    queryset = self.filter_queryset(self.get_queryset())
+def export_csv(queryset):
     response = HttpResponse(content_type='text/csv')
     response.write(u'\ufeff'.encode('utf8'))
     writer = csv.writer(response)
