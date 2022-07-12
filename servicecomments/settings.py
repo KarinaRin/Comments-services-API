@@ -5,14 +5,12 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = (os.getenv("DEBUG") == 'True')
 
 ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"]
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,14 +55,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'servicecomments.wsgi.application'
 
-
 DATABASES = {
-    'default': {
+    'sqlite3': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.postgresql',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+    },
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_NAME'),
+        'USER': os.environ.get('POSTGRES_USER', 'user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', 5432),
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -81,7 +85,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -92,7 +95,6 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
