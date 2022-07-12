@@ -1,30 +1,17 @@
-import serpy as serpy
 from rest_framework import serializers
 from .models import *
 
 
 class CommentSerializer(serializers.ModelSerializer):
 
+    def validate(self, data):
+
+        if data['content_type'] not in ContentType.objects.all():
+            raise serializers.ValidationError("This entity doesn't exist yet!")
+        if not data['content_type'].model_class().objects.filter(id=data['object_id']):
+            raise serializers.ValidationError("This entity's object doesn't exist yet!")
+        return data
+
     class Meta:
         model = Comment
-        fields = ['content_type', 'object_id', 'parent', 'date_created', 'text', 'user']
-
-
-class FlatCommentUserSerializer(serpy.Serializer):
-    user = serpy.StrField(attr='user')
-
-
-class FlatCommentSerializer(serpy.Serializer):
-    id = serpy.IntField()
-    parent = serpy.StrField()
-    parent_id = serpy.IntField(required=False)
-    content_type = serpy.StrField()
-    content_type_id = serpy.IntField()
-    text = serpy.StrField()
-    object_id = serpy.IntField()
-    date_created = serpy.StrField()
-    level = serpy.IntField()
-    user = serpy.StrField()
-
-    def get_user(self, obj):
-        return FlatCommentUserSerializer(obj).data
+        fields = ['id', 'content_type', 'object_id', 'parent', 'created_at', 'text', 'user']

@@ -1,49 +1,45 @@
-from django.http import Http404
-from rest_framework import generics
-from .serializers import *
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import serializers
+from rest_framework.settings import api_settings
+from rest_framework.viewsets import GenericViewSet
+from rest_framework_csv.renderers import CSVRenderer
+
+from .serializers import CommentSerializer
 from .models import Comment
+from .filters import CommentFilter
+from .services.export_services import export_csv
 
 
-class CommentCreateView(generics.CreateAPIView):
+class CommentsViewSet(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      GenericViewSet):
     serializer_class = CommentSerializer
-
-
-class CommentList(generics.ListAPIView):
-    serializer_class = FlatCommentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CommentFilter
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (CSVRenderer,)
     queryset = Comment.objects.all()
 
-
-class ParentCommentList(generics.ListAPIView):
-    serializer_class = FlatCommentSerializer
-
     def get_queryset(self):
-        return Comment.objects.filter(parent=None)\
-            .filter(content_type_id=self.kwargs['content_pk'])\
-            .filter(object_id=self.kwargs['object_pk'])
+        content_type = self.request.query_params.get('content_type')
+        id_params = self.request.query_params.get('id')
+        filtered_qs = self.filter_queryset(super().get_queryset())
+        if self.action != 'export_csv':
+            if content_type or id_params:
+                if not content_type or not id_params:
+                    raise serializers.ValidationError("Invalid parameter, content_type and id_params should have value")
+        if self.action == 'get_children':
+            return filtered_qs.get_descendants(include_self=True)
+        return Comment.objects.all()
 
+    @action(detail=False, methods=['get'])
+    def get_children(self, request):
+        return Response(self.get_serializer(self.get_queryset(), many=True).data)
 
-class CommentChildren(generics.ListAPIView):
-    serializer_class = FlatCommentSerializer
+    @action(methods=["get"], detail=False)
+    def export_csv(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        return export_csv(queryset)
 
-    def get_queryset(self):
-        try:
-            comment = Comment.objects.get(pk=self.kwargs['pk'])
-        except Comment.DoesNotExist:
-            raise Http404
-
-        return comment.get_descendants(include_self=False)
-
-
-class EntityChildren(generics.ListAPIView):
-    serializer_class = FlatCommentSerializer
-
-    def get_queryset(self):
-        return Comment.objects.filter(content_type_id=self.kwargs['content_pk'])\
-            .filter(object_id=self.kwargs['object_pk'])
-
-
-class CommentUserList(generics.ListAPIView):
-    serializer_class = FlatCommentSerializer
-
-    def get_queryset(self):
-        return Comment.objects.filter(user__username=self.kwargs['username'])
