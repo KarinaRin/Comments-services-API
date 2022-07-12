@@ -12,7 +12,7 @@ class CommentFilter(django_filters.FilterSet):
     class Meta:
         model = Comment
         fields = ['content_type',
-                  'object_id',
                   'user',
                   'parent',
+                  'id'
                   ]
